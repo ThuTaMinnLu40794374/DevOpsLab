@@ -1,6 +1,8 @@
 package com.napier.sem;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class App
 {
@@ -34,13 +36,15 @@ public class App
                 // Wait a bit for db to start
                 Thread.sleep(10000);
                 // Connect to database
-                con = DriverManager.getConnection("jdbc:mysql://db:3306/employees?allowPublicKeyRetrieval=true&useSSL=false", "root", "example");
+                con = DriverManager.getConnection(
+                        "jdbc:mysql://db:3306/employees?allowPublicKeyRetrieval=true&useSSL=false",
+                        "root", "example");
                 System.out.println("Successfully connected");
                 break;
             }
             catch (SQLException sqle)
             {
-                System.out.println("Failed to connect to database attempt " + Integer.toString(i));
+                System.out.println("Failed to connect to database attempt " + i);
                 System.out.println(sqle.getMessage());
             }
             catch (InterruptedException ie)
@@ -68,21 +72,21 @@ public class App
             }
         }
     }
+
+    /**
+     * Get single employee by ID.
+     */
     public Employee getEmployee(int ID)
     {
         try
         {
-            // Create an SQL statement
             Statement stmt = con.createStatement();
-            // Create string for SQL statement
             String strSelect =
-                    "SELECT emp_no, first_name, last_name "
-                            + "FROM employees "
-                            + "WHERE emp_no = " + ID;
-            // Execute SQL statement
+                    "SELECT emp_no, first_name, last_name " +
+                            "FROM employees " +
+                            "WHERE emp_no = " + ID;
             ResultSet rset = stmt.executeQuery(strSelect);
-            // Return new employee if valid.
-            // Check one is returned
+
             if (rset.next())
             {
                 Employee emp = new Employee();
@@ -101,6 +105,49 @@ public class App
             return null;
         }
     }
+
+    /**
+     * Get all employees by job title.
+     */
+    public List<Employee> getEmployeesByTitle(String title)
+    {
+        List<Employee> employees = new ArrayList<>();
+        try
+        {
+            Statement stmt = con.createStatement();
+            String strSelect =
+                    "SELECT employees.emp_no, employees.first_name, employees.last_name, salaries.salary " +
+                            "FROM employees, salaries, titles " +
+                            "WHERE employees.emp_no = salaries.emp_no " +
+                            "AND employees.emp_no = titles.emp_no " +
+                            "AND salaries.to_date = '9999-01-01' " +
+                            "AND titles.to_date = '9999-01-01' " +
+                            "AND titles.title = '" + title + "' " +
+                            "ORDER BY employees.emp_no ASC";
+
+            ResultSet rset = stmt.executeQuery(strSelect);
+
+            while (rset.next())
+            {
+                Employee emp = new Employee();
+                emp.emp_no = rset.getInt("emp_no");
+                emp.first_name = rset.getString("first_name");
+                emp.last_name = rset.getString("last_name");
+                emp.salary = rset.getInt("salary");
+                employees.add(emp);
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to get employees by title");
+        }
+        return employees;
+    }
+
+    /**
+     * Display employee information.
+     */
     public void displayEmployee(Employee emp)
     {
         if (emp != null)
@@ -109,24 +156,34 @@ public class App
                     emp.emp_no + " "
                             + emp.first_name + " "
                             + emp.last_name + "\n"
-                            + emp.title + "\n"
-                            + "Salary:" + emp.salary + "\n"
+                            + "Salary: " + emp.salary + "\n"
                             + emp.dept_name + "\n"
                             + "Manager: " + emp.manager + "\n");
         }
     }
+
+    /**
+     * Main method.
+     */
     public static void main(String[] args)
     {
-        // Create new Application
         App a = new App();
 
         // Connect to database
         a.connect();
-        // Get Employee
-        Employee emp = a.getEmployee(255530);
-        // Display results
-        a.displayEmployee(emp);
-        // Disconnect from database
+
+        // Get one employee by ID
+        //Employee emp = a.getEmployee(255530);
+        //a.displayEmployee(emp);
+
+        // Get employees by title (e.g., Engineer)
+        List<Employee> engineers = a.getEmployeesByTitle("Engineer");
+        for (Employee e : engineers)
+        {
+            a.displayEmployee(e);
+        }
+
+        // Disconnect
         a.disconnect();
     }
 }
