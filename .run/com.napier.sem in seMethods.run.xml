@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="com.napier.sem in seMethods" type="JUnit" factoryName="JUnit">
     <module name="seMethods" />
-    <option name="PACKAGE_NAME" value="com.napier.sem" />
-    <option name="MAIN_CLASS_NAME" value="com.napier.sem.Testing" />
+    <option name="PACKAGE_NAME" value="com.napier.devops" />
+    <option name="MAIN_CLASS_NAME" value="com.napier.devops.Testing" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="class" />
     <method v="2">

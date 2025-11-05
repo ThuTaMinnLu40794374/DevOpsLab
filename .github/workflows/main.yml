@@ -3,7 +3,7 @@ on: push
 
 jobs:
   build:
-    name: Unit Test Action
+    name: Hello world action
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -16,7 +16,7 @@ jobs:
           java-version: '18'
           distribution: 'adopt'
       - name: Unit Tests
-        run: mvn -Dtest=com.napier.sem.Testing
+        run: mvn -Dtest=com.napier.devops.Testing
       - name: Package and Run docker compose
         run: |
             mvn package -DskipTests

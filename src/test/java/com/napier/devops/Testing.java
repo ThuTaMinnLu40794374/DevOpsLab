@@ -1,4 +1,4 @@
-package com.napier.sem;
+package com.napier.devops;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
