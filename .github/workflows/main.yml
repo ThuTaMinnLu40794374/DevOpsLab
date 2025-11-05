@@ -3,7 +3,7 @@ on: push
 
 jobs:
   build:
-    name: Hello world action
+    name: Unit Test Action
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
