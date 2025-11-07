@@ -12,7 +12,7 @@ public class App {
     /**
      * Connect to the MySQL database.
      */
-    public void connect() {
+    public void connect(String location, int delay) {
         try {
             // Load Database driver
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -26,15 +26,15 @@ public class App {
             System.out.println("Connecting to database...");
             try {
                 // Wait a bit for db to start
-                Thread.sleep(30000);
+                Thread.sleep(delay);
                 // Connect to database
-                con = DriverManager.getConnection(
-                        "jdbc:mysql://db:3306/employees?useSSL=false&allowPublicKeyRetrieval=true",
+                con = DriverManager.getConnection("jdbc:mysql://" + location
+                                + "/employees?allowPublicKeyRetrieval=true&useSSL=false",
                         "root", "example");
                 System.out.println("Successfully connected");
                 break;
             } catch (SQLException sqle) {
-                System.out.println("Failed to connect to database attempt " + i);
+                System.out.println("Failed to connect to database attempt " +                                  Integer.toString(i));
                 System.out.println(sqle.getMessage());
             } catch (InterruptedException ie) {
                 System.out.println("Thread interrupted? Should not happen.");
@@ -272,31 +272,43 @@ public class App {
 
     public static void main(String[] args) {
         App a = new App();
-        a.connect();
 
-        // 1️⃣ Get Department and Manager
-        Department dept = a.getDepartment("Sales");
-        if (dept != null) {
-            System.out.println("\nDepartment: " + dept.dept_name +
-                    " | Manager: " + dept.manager.first_name + " " + dept.manager.last_name);
+        if(args.length < 1){
+            a.connect("localhost:33060", 30000);
+        }else{
+            a.connect(args[0], Integer.parseInt(args[1]));
         }
 
-        // 2️⃣ Get Employees and Salaries for Department
+        Department dept = a.getDepartment("Development");
         ArrayList<Employee> employees = a.getSalariesByDepartment(dept);
+
+
+        // Print salary report
         a.printSalaries(employees);
 
-        // 3️⃣ Get Employee by ID and by Name
-        Employee emp = a.getEmployee(10001);
-        if (emp != null && emp.manager != null) {
-            System.out.println("\nEmployee: " + emp.first_name + " " + emp.last_name +
-                    " | Dept: " + emp.dept_name +
-                    " | Manager: " + emp.manager.first_name + " " + emp.manager.last_name);
-        }
-
-        Employee empByName = a.getEmployee("Georgi", "Facello");
-        if (empByName != null) {
-            System.out.println("Found by name: " + empByName.emp_no + " " + empByName.first_name + " " + empByName.last_name);
-        }
+//        // 1️⃣ Get Department and Manager
+//        Department dept = a.getDepartment("Sales");
+//        if (dept != null) {
+//            System.out.println("\nDepartment: " + dept.dept_name +
+//                    " | Manager: " + dept.manager.first_name + " " + dept.manager.last_name);
+//        }
+//
+//        // 2️⃣ Get Employees and Salaries for Department
+//        ArrayList<Employee> employees = a.getSalariesByDepartment(dept);
+//        a.printSalaries(employees);
+//
+//        // 3️⃣ Get Employee by ID and by Name
+//        Employee emp = a.getEmployee(10001);
+//        if (emp != null && emp.manager != null) {
+//            System.out.println("\nEmployee: " + emp.first_name + " " + emp.last_name +
+//                    " | Dept: " + emp.dept_name +
+//                    " | Manager: " + emp.manager.first_name + " " + emp.manager.last_name);
+//        }
+//
+//        Employee empByName = a.getEmployee("Georgi", "Facello");
+//        if (empByName != null) {
+//            System.out.println("Found by name: " + empByName.emp_no + " " + empByName.first_name + " " + empByName.last_name);
+//        }
 
         a.disconnect();
     }

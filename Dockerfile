@@ -1,4 +1,4 @@
 FROM eclipse-temurin:18-jdk
-COPY ./target/seMethods-0.1.0.4-jar-with-dependencies.jar /tmp
+COPY ./target/devops.jar /tmp
 WORKDIR /tmp
-ENTRYPOINT ["java", "-jar", "seMethods-0.1.0.4-jar-with-dependencies.jar"]
+ENTRYPOINT ["java", "-jar", "devops.jar", "db:3306", "30000"]
