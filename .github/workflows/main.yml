@@ -41,12 +41,15 @@ jobs:
           distribution: 'temurin'
       - name: Integration Tests
         run: |
-          docker build -t database ./db 
-          docker run --name employees -dp 33060:3306 database
+          docker network create testnet
+          docker build -t database ./db
+          docker run -d --name employees --network testnet -e MYSQL_ROOT_PASSWORD=example database
+          echo "Waiting for MySQL to start..."
+          sleep 25
           mvn -Dtest=com.napier.sem.AppIntegrationTest test
           docker stop employees
           docker rm employees
-          docker image rm database
+          docker network rm testnet
 
   build:
     name: Build and Start Using Docker Compose
