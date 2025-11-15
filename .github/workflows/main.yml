@@ -43,6 +43,15 @@ jobs:
         run: |
           docker compose up -d db
           mvn -Dtest=com.napier.sem.AppIntegrationTest test
+      - name: Shutdown
+        run: docker compose down
+      - name: CodeCov
+        uses: codecov/codecov-action@v5
+        with:
+          #token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          directory: ./target/site/jacoco
+          flags: Integration Tests # optional
+          verbose: true # optional (default = false)
 
   build:
     name: Build and Start Using Docker Compose
