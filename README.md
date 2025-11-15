@@ -10,3 +10,5 @@ __Nice__
 
 # DevOps
 ![GitHub Workflow Status :DevOpsLab](https://img.shields.io/github/workflow/status/ThuTaMinnLu40794374/DevOpsLab/main/DevOpsLab?style=flat-square)
+
+[![codecov](https://codecov.io/gh/ThuTaMinnLu40794374/DevOpsLab/branch/develop/graph/badge.svg?token=PW9KGZHGU5)](https://codecov.io/gh/ThuTaMinnLu40794374/DevOpsLab)
