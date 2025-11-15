@@ -96,12 +96,13 @@ public class App {
         }
     }
 
+
     /**
-     * Gets employee details including department and manager.
-     * @param ID Employee number
+     * Get employee details including department and manager.
+     * @param empNo Employee number
      * @return Employee object with department and manager info
      */
-    public Employee getEmployee(int ID) {
+    public Employee getEmployeeWithDeptAndManager(int empNo) {
         try {
             Statement stmt = con.createStatement();
             String strSelect =
@@ -111,7 +112,7 @@ public class App {
                             "JOIN departments d ON de.dept_no = d.dept_no " +
                             "JOIN dept_manager dm ON d.dept_no = dm.dept_no " +
                             "JOIN employees em ON dm.emp_no = em.emp_no " +
-                            "WHERE e.emp_no = " + ID + " AND dm.to_date = '9999-01-01'";
+                            "WHERE e.emp_no = " + empNo + " AND dm.to_date = '9999-01-01'";
 
             ResultSet rset = stmt.executeQuery(strSelect);
 
@@ -139,13 +140,39 @@ public class App {
         }
     }
 
+
+    public Employee getEmployee(int empNo) {
+        try {
+            String sql = "SELECT emp_no, first_name, last_name FROM employees WHERE emp_no = ?";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, empNo);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (!rs.next()) return null;
+
+            Employee emp = new Employee();
+            emp.emp_no = rs.getInt("emp_no");
+            emp.first_name = rs.getString("first_name");
+            emp.last_name = rs.getString("last_name");
+
+            rs.close();
+            pstmt.close();
+            return emp;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
     /**
      * Get employee based on first name and last name.
      * @param first_name Employee first name
      * @param last_name Employee last name
      * @return Employee object or null if not found
      */
-    public Employee getEmployee(String first_name, String last_name) {
+    public Employee getEmployeeByName(String first_name, String last_name) {
         try {
             Statement stmt = con.createStatement();
             String query =
@@ -169,6 +196,9 @@ public class App {
             return null;
         }
     }
+
+
+
 
     /**
      * Gets all current employees and salaries for a given department.
@@ -269,8 +299,45 @@ public class App {
     }
 
 
+    public void deleteEmployee(int empNo) {
+        try {
+            String sql = "DELETE FROM employees WHERE emp_no = ?";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, empNo);
+            pstmt.executeUpdate();
+            pstmt.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-    public static void main(String[] args) {
+
+    public void addEmployee(Employee emp) {
+        try {
+            String sql = "INSERT INTO employees (emp_no, first_name, last_name, birth_date, gender, hire_date) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)";
+
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, emp.emp_no);
+            pstmt.setString(2, emp.first_name);
+            pstmt.setString(3, emp.last_name);
+            pstmt.setString(4, "1990-01-01");
+            pstmt.setString(5, "M");
+            pstmt.setString(6, "2020-01-01");
+
+            pstmt.executeUpdate();
+            pstmt.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to add employee");
+        }
+    }
+
+
+
+    public static void main(String[] args) throws SQLException {
         App a = new App();
 
         if(args.length < 1){
@@ -279,37 +346,90 @@ public class App {
             a.connect(args[0], Integer.parseInt(args[1]));
         }
 
-        Department dept = a.getDepartment("Development");
-        ArrayList<Employee> employees = a.getSalariesByDepartment(dept);
+        Employee emp = a.getEmployee(500002);
+        if(emp != null) {
+            System.out.println("Employee inserted: " + emp.first_name + " " + emp.last_name);
+        } else {
+            System.out.println("Employee not found in DB!");
+        }
 
 
-        // Print salary report
-        a.printSalaries(employees);
+        // 1️⃣ Get basic employee info by ID
+        Employee empBasic = a.getEmployee(255530);
+        if (empBasic != null) {
+            System.out.println("\n=== Basic Employee Info ===");
+            System.out.println(empBasic.emp_no + " | " + empBasic.first_name + " " + empBasic.last_name);
+        } else {
+            System.out.println("Employee not found");
+        }
 
-//        // 1️⃣ Get Department and Manager
-//        Department dept = a.getDepartment("Sales");
-//        if (dept != null) {
-//            System.out.println("\nDepartment: " + dept.dept_name +
-//                    " | Manager: " + dept.manager.first_name + " " + dept.manager.last_name);
-//        }
+        // 2️⃣ Get employee info with department and manager
+        Employee empWithDept = a.getEmployeeWithDeptAndManager(255530);
+        if (empWithDept != null) {
+            System.out.println("\n=== Employee Info with Department and Manager ===");
+            System.out.println("Employee: " + empWithDept.emp_no + " | " +
+                    empWithDept.first_name + " " + empWithDept.last_name);
+            System.out.println("Department: " + empWithDept.dept_name);
+            if (empWithDept.manager != null) {
+                System.out.println("Manager: " + empWithDept.manager.first_name + " " + empWithDept.manager.last_name);
+            }
+        } else {
+            System.out.println("Employee not found");
+        }
+
+        // 3️⃣ Get employee by first and last name
+        Employee empByName = a.getEmployeeByName("Ronghao", "Garigliano");
+        if (empByName != null) {
+            System.out.println("\n=== Employee Info by Name ===");
+            System.out.println(empByName.emp_no + " | " + empByName.first_name + " " + empByName.last_name);
+        } else {
+            System.out.println("Employee not found by name");
+        }
+
+//        try {
+//            // 2️⃣ Print all salaries for all employees
+//            Statement stmt = a.con.createStatement();
+//            String allEmpQuery = "SELECT emp_no, first_name, last_name, salary FROM employees " +
+//                    "JOIN salaries USING(emp_no) " +
+//                    "WHERE salaries.to_date = '9999-01-01' " +
+//                    "ORDER BY emp_no ASC";
+//            ResultSet rs = stmt.executeQuery(allEmpQuery);
 //
-//        // 2️⃣ Get Employees and Salaries for Department
-//        ArrayList<Employee> employees = a.getSalariesByDepartment(dept);
-//        a.printSalaries(employees);
+//            ArrayList<Employee> allEmployees = new ArrayList<>();
+//            while(rs.next()) {
+//                Employee emp = new Employee();
+//                emp.emp_no = rs.getInt("emp_no");
+//                emp.first_name = rs.getString("first_name");
+//                emp.last_name = rs.getString("last_name");
+//                emp.salary = rs.getInt("salary");
+//                allEmployees.add(emp);
+//            }
+//            System.out.println("=== All Employees and Salaries ===");
+//            a.printSalaries(allEmployees);
 //
-//        // 3️⃣ Get Employee by ID and by Name
-//        Employee emp = a.getEmployee(10001);
-//        if (emp != null && emp.manager != null) {
-//            System.out.println("\nEmployee: " + emp.first_name + " " + emp.last_name +
-//                    " | Dept: " + emp.dept_name +
-//                    " | Manager: " + emp.manager.first_name + " " + emp.manager.last_name);
-//        }
+//            rs.close();
+//            stmt.close();
 //
-//        Employee empByName = a.getEmployee("Georgi", "Facello");
-//        if (empByName != null) {
-//            System.out.println("Found by name: " + empByName.emp_no + " " + empByName.first_name + " " + empByName.last_name);
+//            // 3️⃣ Get Development Department info
+//            Department devDept = a.getDepartment("Development");
+//            if(devDept != null) {
+//                System.out.println("\n=== Development Department Manager ===");
+//                System.out.println("Department: " + devDept.dept_name +
+//                        " | Manager: " + devDept.manager.first_name + " " + devDept.manager.last_name);
+//
+//                // 4️⃣ Get all employees and salaries for Development Department
+//                ArrayList<Employee> devEmployees = a.getSalariesByDepartment(devDept);
+//                System.out.println("\n=== Employees and Salaries for Development Department ===");
+//                a.printSalaries(devEmployees);
+//            } else {
+//                System.out.println("Development Department not found!");
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
 //        }
 
+        // Disconnect
         a.disconnect();
     }
 }

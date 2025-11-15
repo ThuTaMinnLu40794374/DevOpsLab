@@ -25,5 +25,29 @@ class AppIntegrationTest {
         assertEquals("Garigliano", emp.last_name);
     }
 
+    @Test
+    void testAddEmployee() {
+
+        // Always clean old record so INSERT won’t fail
+//        app.deleteEmployee(500000);
+
+        Employee emp = new Employee();
+        emp.emp_no = 500002;
+        emp.first_name = "Wana";
+        emp.last_name = "Fat";
+
+        app.addEmployee(emp);
+
+        emp = app.getEmployee(500002);
+        assertNotNull(emp, "Employee not found — insert failed");
+
+        assertEquals(500002, emp.emp_no);
+        assertEquals("Wana", emp.first_name);
+        assertEquals("Fat", emp.last_name);
+    }
+
+
+
+
 
 }
