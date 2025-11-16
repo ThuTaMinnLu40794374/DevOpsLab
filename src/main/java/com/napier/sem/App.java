@@ -346,12 +346,12 @@ public class App {
             a.connect(args[0], Integer.parseInt(args[1]));
         }
 
-        Employee emp = a.getEmployee(500002);
-        if(emp != null) {
-            System.out.println("Employee inserted: " + emp.first_name + " " + emp.last_name);
-        } else {
-            System.out.println("Employee not found in DB!");
-        }
+//        Employee emp = a.getEmployee(500002);
+//        if(emp != null) {
+//            System.out.println("Employee inserted: " + emp.first_name + " " + emp.last_name);
+//        } else {
+//            System.out.println("Employee not found in DB!");
+//        }
 
 
         // 1️⃣ Get basic employee info by ID
@@ -386,48 +386,48 @@ public class App {
             System.out.println("Employee not found by name");
         }
 
-//        try {
-//            // 2️⃣ Print all salaries for all employees
-//            Statement stmt = a.con.createStatement();
-//            String allEmpQuery = "SELECT emp_no, first_name, last_name, salary FROM employees " +
-//                    "JOIN salaries USING(emp_no) " +
-//                    "WHERE salaries.to_date = '9999-01-01' " +
-//                    "ORDER BY emp_no ASC";
-//            ResultSet rs = stmt.executeQuery(allEmpQuery);
-//
-//            ArrayList<Employee> allEmployees = new ArrayList<>();
-//            while(rs.next()) {
-//                Employee emp = new Employee();
-//                emp.emp_no = rs.getInt("emp_no");
-//                emp.first_name = rs.getString("first_name");
-//                emp.last_name = rs.getString("last_name");
-//                emp.salary = rs.getInt("salary");
-//                allEmployees.add(emp);
-//            }
-//            System.out.println("=== All Employees and Salaries ===");
-//            a.printSalaries(allEmployees);
-//
-//            rs.close();
-//            stmt.close();
-//
-//            // 3️⃣ Get Development Department info
-//            Department devDept = a.getDepartment("Development");
-//            if(devDept != null) {
-//                System.out.println("\n=== Development Department Manager ===");
-//                System.out.println("Department: " + devDept.dept_name +
-//                        " | Manager: " + devDept.manager.first_name + " " + devDept.manager.last_name);
-//
-//                // 4️⃣ Get all employees and salaries for Development Department
-//                ArrayList<Employee> devEmployees = a.getSalariesByDepartment(devDept);
-//                System.out.println("\n=== Employees and Salaries for Development Department ===");
-//                a.printSalaries(devEmployees);
-//            } else {
-//                System.out.println("Development Department not found!");
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            // 2️⃣ Print all salaries for all employees
+            Statement stmt = a.con.createStatement();
+            String allEmpQuery = "SELECT emp_no, first_name, last_name, salary FROM employees " +
+                    "JOIN salaries USING(emp_no) " +
+                    "WHERE salaries.to_date = '9999-01-01' " +
+                    "ORDER BY emp_no ASC";
+            ResultSet rs = stmt.executeQuery(allEmpQuery);
+
+            ArrayList<Employee> allEmployees = new ArrayList<>();
+            while(rs.next()) {
+                Employee emp = new Employee();
+                emp.emp_no = rs.getInt("emp_no");
+                emp.first_name = rs.getString("first_name");
+                emp.last_name = rs.getString("last_name");
+                emp.salary = rs.getInt("salary");
+                allEmployees.add(emp);
+            }
+            System.out.println("=== All Employees and Salaries ===");
+            a.printSalaries(allEmployees);
+
+            rs.close();
+            stmt.close();
+
+            // 3️⃣ Get Development Department info
+            Department devDept = a.getDepartment("Development");
+            if(devDept != null) {
+                System.out.println("\n=== Development Department Manager ===");
+                System.out.println("Department: " + devDept.dept_name +
+                        " | Manager: " + devDept.manager.first_name + " " + devDept.manager.last_name);
+
+                // 4️⃣ Get all employees and salaries for Development Department
+                ArrayList<Employee> devEmployees = a.getSalariesByDepartment(devDept);
+                System.out.println("\n=== Employees and Salaries for Development Department ===");
+                a.printSalaries(devEmployees);
+            } else {
+                System.out.println("Development Department not found!");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Disconnect
         a.disconnect();

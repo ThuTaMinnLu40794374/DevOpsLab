@@ -29,7 +29,7 @@ class AppIntegrationTest {
     void testAddEmployee() {
 
         // Always clean old record so INSERT won’t fail
-//        app.deleteEmployee(500000);
+        app.deleteEmployee(500002);
 
         Employee emp = new Employee();
         emp.emp_no = 500002;
