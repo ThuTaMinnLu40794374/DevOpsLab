@@ -24,7 +24,15 @@ jobs:
           distribution: 'temurin'
 
       - name: Run Unit Tests
-        run: mvn test -Dtest=com.napier.sem.Testing
+        run: mvn test -Dtest=com.napier.sem.
+
+      - name: CodeCov
+        uses: codecov/codecov-action@v5
+        with:
+          #token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          directory: ./target/site/jacoco
+          flags: Unit Tests # optional
+          verbose: true # optional (default = false)
 
   IntegrationTests:
     name: Integration Tests
@@ -72,3 +80,10 @@ jobs:
         run: |
           mvn clean package -DskipTests
           docker compose up --abort-on-container-exit
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: "latest"
+          files: |
+            ./target/*.jar
