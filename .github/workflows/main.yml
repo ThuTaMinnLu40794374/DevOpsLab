@@ -90,7 +90,7 @@ jobs:
       - name: Copy Output
         run: |
           mkdir -p reports
-          docker container cp semethods-app-1:./tmp/reports/. ./reports
+          docker container cp devopslab-app-1:./tmp/reports/. ./reports
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.2.5
         with:
