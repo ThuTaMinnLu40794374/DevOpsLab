@@ -596,6 +596,6 @@ public class App {
 //        }
 
         // Disconnect
-//        a.disconnect();
+        a.disconnect();
     }
 }
