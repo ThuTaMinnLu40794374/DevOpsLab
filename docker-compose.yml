@@ -3,6 +3,8 @@ services:
   # Application Dockerfile is in same folder which is .
   app:
     build: .
+    ports:
+      - "9090:9090"
 
   # db is is db folder
   db:
@@ -17,3 +19,12 @@ services:
       MYSQL_ROOT_HOST: '%'
     ports:
       - "33060:3306"
+
+
+  web:
+    build: ./web
+    container_name: semethods-web
+    ports:
+      - "80:80"
+    depends_on:
+      - app

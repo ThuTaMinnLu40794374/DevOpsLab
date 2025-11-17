@@ -19,7 +19,7 @@ class AppIntegrationTest {
 
     @Test
     void testGetEmployee() {
-        Employee emp = app.getEmployee(255530);
+        Employee emp = app.getEmployee(String.valueOf(255530));
         assertEquals(255530, emp.emp_no);
         assertEquals("Ronghao", emp.first_name);
         assertEquals("Garigliano", emp.last_name);
@@ -38,7 +38,7 @@ class AppIntegrationTest {
 
         app.addEmployee(emp);
 
-        emp = app.getEmployee(500002);
+        emp = app.getEmployee(String.valueOf(500002));
         assertNotNull(emp, "Employee not found — insert failed");
 
         assertEquals(500002, emp.emp_no);
